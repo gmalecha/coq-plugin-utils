@@ -1,7 +1,9 @@
 OCAMLBUILDDIR=$(shell ocamlfind query ocamlbuild)
 
-all: _build/coq_builder
-	@ ./_build/coq_builder -no-plugin coq.otarget
+all:
+	ocamlbuild coq.otarget
+# all: _build/coq_builder
+# 	@ ./_build/coq_builder -no-plugin coq.otarget
 
 _build/coq_builder: myocamlbuild.ml coq_paths.ml
 	@ echo "building builder...."
