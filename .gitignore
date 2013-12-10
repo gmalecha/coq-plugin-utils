@@ -9,3 +9,4 @@
 *.cmxa
 *.d
 Makefile.coq
+_build

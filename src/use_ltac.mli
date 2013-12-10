@@ -8,3 +8,8 @@ val ltac_apply : Tacexpr.glob_tactic_expr -> Tacexpr.glob_tactic_arg list -> Pro
  ** can be passed to an Ltac function.
  **)
 val to_ltac_val : Term.constr -> Tacexpr.glob_tactic_arg
+
+
+(** [pose n c k] ~ ltac:(pose (n := c) ; k n) **)
+val pose : string -> Term.constr -> (Term.constr -> Proof_type.tactic)
+  -> Proof_type.tactic

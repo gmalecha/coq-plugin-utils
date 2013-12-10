@@ -1,19 +1,11 @@
-all: Makefile.coq
-	@ $(MAKE) -f Makefile.coq all
+INSTALL_DIR=$(shell coqc -where)/user-contrib/PluginUtils
+INSTALL_FILES=plugin_utils.cma plugin_utils.cmxs plugin_utils.cmi
 
-clean: Makefile.coq
-	@ $(MAKE) -f Makefile.coq clean
-	@ rm Makefile.coq
+plugin:
+	$(MAKE) -C src
 
-install: all
-	@ $(MAKE) -f Makefile.coq install
-
-SRCS=$(wildcard src/*.ml) \
-     $(wildcard src/*.mli) \
-     $(wildcard src/*.ml4) \
-     $(wildcard src/*.mllib) \
-     $(wildcard src/*.v) \
-     $(wildcard test-suite/*.v)
-
-Makefile.coq: Makefile
-	@ coq_makefile -I src -R src PluginUtils $(SRCS) -o Makefile.coq
+install: plugin
+	for i in $(INSTALL_FILES); do \
+	  install -d `dirname $(INSTALL_DIR)/$$i`; \
+	  install -m 0644 src/_build/$$i $(INSTALL_DIR)/$$i; \
+	done
