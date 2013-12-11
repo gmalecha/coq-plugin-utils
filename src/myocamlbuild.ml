@@ -78,10 +78,6 @@ let coq_args =
 let coq_plugin_args =
   [A "-rectypes"] @ (List.flatten (List.map (fun x -> [A "-I"; A (coq_dir x)]) all_coq_plugins))
 
-let coq_plugin_util_args =
-  List.flatten (List.map (fun x -> [A "-I"; A (coq_dir x)])
-		  ["user-contrib/PluginUtils"])
-
 let add_coq x =
   match x with
   | After_rules ->
@@ -98,9 +94,7 @@ let add_coq x =
     flag ["ocaml";"coq";"pack"] & (S coq_args) ;
     flag ["ocaml";"coq_plugins";"compile"] & (S coq_plugin_args) ;
     flag ["ocaml";"coq_plugins";"pack"] & (S coq_plugin_args) ;
-    flag ["ocaml";"compile";"plugin_utils"] & (S coq_plugin_util_args) ;
-    flag ["ocaml";"link";"byte";"plugin_utils"] & (S (coq_plugin_util_args @ [A (coq_dir "user-contrib/PluginUtils/plugin_utils.cma")])) ;
-    flag ["ocaml";"link";"native";"plugin_utils"] & (S (coq_plugin_util_args @ [A (coq_dir "user-contrib/PluginUtils/plugin_utils.cmx")])) ;
+    flag ["ocaml";"link";"coq_plugin"] & (A "-linkpkg") ;
     pflag ["ocaml"] "cflags" (fun x -> S (List.map (fun x -> A x) (split x ','))) ;
     pflag ["ocaml";"link"] "lflags" (fun x -> S (List.map (fun x -> A x) (split x ',')))
   | _ -> ()

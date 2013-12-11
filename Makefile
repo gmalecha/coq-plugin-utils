@@ -1,18 +1,13 @@
 INSTALL_DIR=$(shell coqc -where)/user-contrib/PluginUtils
-INSTALL_FILES=plugin_utils.cma plugin_utils.cmx plugin_utils.cmi
+INSTALL_FILES=plugin_utils.cma plugin_utils.cmx plugin_utils.cmxa plugin_utils.cmi plugin_utils.o
 
 plugin:
 	$(MAKE) -C src
 
 install: plugin
-	for i in $(INSTALL_FILES); do \
-	  install -d `dirname $(INSTALL_DIR)/$$i`; \
-	  install -m 0644 src/_build/$$i $(INSTALL_DIR)/$$i; \
-	done
+	ocamlfind install coq-plugin-utils META $(INSTALL_FILES:%=src/_build/%)
 	install -m 0644 src/myocamlbuild.ml $(INSTALL_DIR)/myocamlbuild.ml
 
 uninstall:
-	for i in $(INSTALL_FILES); do \
-	  rm -f $(INSTALL_DIR)/$$i; \
-	done
+	ocamlfind remove coq-plugin-utils
 	rm -f $(INSTALL_DIR)/myocamlbuild.ml
