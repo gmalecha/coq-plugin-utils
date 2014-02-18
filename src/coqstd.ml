@@ -8,13 +8,13 @@ struct
   let bignums_pkg = ["Coq";"Numbers";"BinNums"]
   let specif_pkg = ["Coq";"Init";"Specif"]
 
-  let none = lazy (resolve_symbol datatypes_pkg "None")
-  let some = lazy (resolve_symbol datatypes_pkg "Some")
+  let c_None = lazy (resolve_symbol datatypes_pkg "None")
+  let c_Some = lazy (resolve_symbol datatypes_pkg "Some")
 
   let to_option typ (x : Term.constr option) =
     match x with
-      None -> Term.mkApp (Lazy.force none, [| typ |])
-    | Some x -> Term.mkApp (Lazy.force some, [| typ ; x |])
+      None -> Term.mkApp (Lazy.force c_None, [| typ |])
+    | Some x -> Term.mkApp (Lazy.force c_Some, [| typ ; x |])
 
   let to_positive =
     let xH = lazy (resolve_symbol bignums_pkg "xH") in
@@ -59,17 +59,17 @@ struct
       then raise (Invalid_argument ("to_nat: " ^ string_of_int n))
       else to_nat n
 
-  let to_list =
-    let c_nil = lazy (resolve_symbol datatypes_pkg "nil") in
-    let c_cons = lazy (resolve_symbol datatypes_pkg "cons") in
-    fun typ ->
-      let the_nil = Term.mkApp (Lazy.force c_nil, [| typ |]) in
-      let rec to_list (ls : Term.constr list) : Term.constr =
-	match ls with
-	  [] -> the_nil
-	| l :: ls ->
-	  Term.mkApp (Lazy.force c_cons, [| typ ; l ; to_list ls |])
-      in to_list
+  let c_nil = lazy (resolve_symbol datatypes_pkg "nil")
+  let c_cons = lazy (resolve_symbol datatypes_pkg "cons")
+
+  let to_list typ =
+    let the_nil = Term.mkApp (Lazy.force c_nil, [| typ |]) in
+    let rec to_list (ls : Term.constr list) : Term.constr =
+      match ls with
+	[] -> the_nil
+      | l :: ls ->
+	Term.mkApp (Lazy.force c_cons, [| typ ; l ; to_list ls |])
+    in to_list
 
   type 'a pmap =
   | PM_Empty
