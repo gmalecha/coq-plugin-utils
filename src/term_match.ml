@@ -5,10 +5,12 @@ type pattern =
 | As of pattern * string
 | Ref of string
 | Choice of pattern list
+| Impl of pattern * pattern
 | Ignore
 
 exception Match_failure
 
+(** NOTE: This function does not clear writes by failed choices **)
 let rec match_pattern p e ctx s =
   match p with
   | Ignore -> s
@@ -61,6 +63,17 @@ let rec match_pattern p e ctx s =
       let res = match_pattern ptrn e ctx s in
       let _ = Hashtbl.add res nm e in
       res
+    end
+  | Impl (l,r) ->
+    begin
+      match Term.kind_of_term e with
+	Term.Prod (_, lhs, rhs) ->
+	  if Term.noccurn 1 rhs then
+	    let _ = match_pattern l lhs ctx s in
+	    match_pattern r rhs ctx s
+	  else
+	    raise Match_failure
+      | _ -> raise Match_failure
     end
   | Ref n ->
     assert false
