@@ -5,8 +5,9 @@ plugin:
 	$(MAKE) -C src
 
 install: plugin
-	ocamlfind install coq-plugin-utils META $(INSTALL_FILES:%=src/_build/%)
+	install -d $(INSTALL_DIR)
 	install -m 0644 src/myocamlbuild.ml $(INSTALL_DIR)/myocamlbuild.ml
+	ocamlfind install -destdir $(INSTALL_DIR) coq-plugin-utils META $(INSTALL_FILES:%=src/_build/%)
 
 uninstall:
 	ocamlfind remove coq-plugin-utils
