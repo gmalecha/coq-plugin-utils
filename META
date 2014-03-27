@@ -1,6 +1,0 @@
-name="coq-plugin-util"
-description="utility functions for writing Coq plugins"
-requires=""
-archive(byte)="plugin_utils.cma"
-archive(native)="plugin_utils.cmx"
-version="0.5"
