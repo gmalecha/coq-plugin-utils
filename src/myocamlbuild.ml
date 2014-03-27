@@ -47,6 +47,12 @@ let coqlib =
 
 let coq_dir s = Lazy.force coqlib ^ s
 
+let camlpX =
+  lazy (
+      match config "CAMLP4" with
+	None -> assert false
+      | Some x -> x)
+
 let all_coq_dirs =
   ["kernel";"lib";"library";"parsing";"pretyping";
    "interp";"proofs";"tactics";"toplevel"]
@@ -84,18 +90,19 @@ let add_coq x =
     rule ".ml4.ml" ~dep:"%.ml4" ~prod:"%.ml"
       (fun env _ ->
 	let ml4 = env "%.ml4" and ml = env "%.ml" in
-	Cmd (S[A"camlp5o";T(tags_of_pathname ml4 ++ "p4mod");
+	Cmd (S[A (Lazy.force camlpX ^ "o");
+	       T(tags_of_pathname ml4 ++ "p4mod");
 	       T(tags_of_pathname ml4 ++ "p4option");
 	       A"-I";A (coq_dir "parsing");
 	       A"pa_extend.cmo";A"pa_macro.cmo";A"q_MLast.cmo";A"grammar.cma";
 	       A"-loc";A"loc";
 	       A"-o"; Px ml; A"-impl"; P ml4])) ;
-    flag ["ocaml";"coq";"compile"] & (S coq_args) ;
-    flag ["ocaml";"coq";"pack"] & (S coq_args) ;
-    flag ["ocaml";"coq_plugins";"compile"] & (S coq_plugin_args) ;
-    flag ["ocaml";"coq_plugins";"pack"] & (S coq_plugin_args) ;
-    flag ["ocaml";"link";"coq_plugin"] & (A "-linkpkg") ;
-    pflag ["ocaml"] "cflags" (fun x -> S (List.map (fun x -> A x) (split x ','))) ;
+    flag ["ocaml";"compile"; "coq"] & (S coq_args) ;
+    flag ["ocaml";"pack"   ; "coq"] & (S coq_args) ;
+    flag ["ocaml";"compile"; "coq_plugin"] & (S coq_plugin_args) ;
+    flag ["ocaml";"pack"   ; "coq_plugin"] & (S coq_plugin_args) ;
+    flag ["ocaml";"link"   ; "coq_plugin"] & (A "-linkpkg") ;
+    pflag ["ocaml";"compile"] "cflags" (fun x -> S (List.map (fun x -> A x) (split x ','))) ;
     pflag ["ocaml";"link"] "lflags" (fun x -> S (List.map (fun x -> A x) (split x ',')))
   | _ -> ()
 ;;
