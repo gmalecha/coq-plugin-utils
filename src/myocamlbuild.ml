@@ -85,6 +85,8 @@ let coq_plugin_args =
   [A "-rectypes"] @ (List.flatten (List.map (fun x -> [A "-I"; A (coq_dir x)]) all_coq_plugins))
 let coq_plugin_util_args =
   [A "-I"; A (Lazy.force coqlib ^ "user-contrib/PluginUtils")]
+let coq_plugin_util_lflags native =
+  [A (Lazy.force coqlib ^ "user-contrib/PluginUtils/plugin_utils." ^ if native then "cmx" else "cmo")]
 
 let add_coq x =
   match x with
@@ -105,7 +107,8 @@ let add_coq x =
     flag ["ocaml";"pack"   ; "coq_plugins"] & (S coq_plugin_args) ;
     flag ["ocaml";"compile"; "coq_plugin_utils"] & (S coq_plugin_util_args) ;
     flag ["ocaml";"link"   ; "coq_plugin_utils"] & (S coq_plugin_util_args) ;
-    flag ["ocaml";"link"   ; "coq_plugin"] & (A "-linkpkg") ;
+    flag ["ocaml";"link";"native" ; "coq_plugin_utils";"coq_plugin"] & (S (coq_plugin_util_lflags true)) ;
+    flag ["ocaml";"link";"byte"   ; "coq_plugin_utils";"coq_plugin"] & (S (coq_plugin_util_lflags false)) ;
     pflag ["ocaml";"compile"] "cflags" (fun x -> S (List.map (fun x -> A x) (split x ','))) ;
     pflag ["ocaml";"link"] "lflags" (fun x -> S (List.map (fun x -> A x) (split x ',')))
   | _ -> ()
