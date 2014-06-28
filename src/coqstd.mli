@@ -13,6 +13,7 @@ sig
   val c_nil : Term.constr Lazy.t
   val c_cons : Term.constr Lazy.t
   val to_list : Term.constr -> Term.constr list -> Term.constr
+  val list_of : Term.constr -> Term.constr
 
   val to_posmap : 'b -> ('b -> 'c option -> 'b -> 'b) ->
     ('a -> 'c option) -> 'a list -> 'b

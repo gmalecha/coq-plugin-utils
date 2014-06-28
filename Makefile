@@ -1,8 +1,8 @@
-INSTALL_DIR=$(shell coqc -where)/user-contrib/PluginUtils
-INSTALL_FILES=plugin_utils.cma plugin_utils.cmx plugin_utils.cmxa plugin_utils.cmi plugin_utils.o
-
 plugin:
 	$(MAKE) -C src
+
+clean:
+	$(MAKE) -C src clean
 
 install: plugin
 	install -d $(INSTALL_DIR)
@@ -13,3 +13,11 @@ install: plugin
 
 uninstall:
 	rm -rf $(INSTALL_DIR)
+
+.coq_config:
+	@ coqc -config > .coq_config
+
+include .coq_config
+
+INSTALL_DIR=$(COQLIB)/user-contrib/PluginUtils
+INSTALL_FILES=plugin_utils.cma plugin_utils.cmx plugin_utils.cmxa plugin_utils.cmi plugin_utils.o

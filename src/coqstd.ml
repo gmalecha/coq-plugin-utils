@@ -71,6 +71,9 @@ struct
 	Term.mkApp (Lazy.force c_cons, [| typ ; l ; to_list ls |])
     in to_list
 
+  let list_of typ =
+    Term.mkApp (resolve_symbol datatypes_pkg "list", [| typ |])
+
   type 'a pmap =
   | PM_Empty
   | PM_Branch of 'a pmap * 'a option * 'a pmap

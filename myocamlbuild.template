@@ -27,15 +27,15 @@ let split ls sep =
 
 let config =
   let res =
-    lazy (let x = split (get_output "coqc -config") '\n' in
-          List.flatten (List.map
-			  (fun x ->
-			    match split x '=' with
-			      k :: v :: [] -> [(k,v)]
-			    | _ -> []) x)) in
+    let x = split coq_config_string '|' in
+    List.flatten (List.map
+		    (fun x ->
+		      match split x '=' with
+			k :: v :: [] -> [(k,v)]
+		      | _ -> []) x) in
   fun x ->
     try
-      Some (List.assoc x (Lazy.force res))
+      Some (List.assoc x res)
     with
       Not_found -> None
 

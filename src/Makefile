@@ -1,17 +1,13 @@
 OCAMLBUILDDIR=$(shell ocamlfind query ocamlbuild)
 
-all:
+all: myocamlbuild.ml
 	ocamlbuild coq.otarget
-# all: _build/coq_builder
-# 	@ ./_build/coq_builder -no-plugin coq.otarget
 
-_build/coq_builder: myocamlbuild.ml coq_paths.ml
-	@ echo "building builder...."
-	@ ocamlbuild -cflags -I,`ocamlfind query ocamlbuild` -no-plugin myocamlbuild.cmo
-	@ ocamlc.opt unix.cma -I $(OCAMLBUILDDIR) $(OCAMLBUILDDIR)/ocamlbuildlib.cma \
-	   _build/coq_paths.cmo _build/myocamlbuild.cmo \
-	   $(OCAMLBUILDDIR)/ocamlbuild.cmo -o _build/coq_builder
-	@ echo "done"
+myocamlbuild.ml: ../myocamlbuild.template
+	@ echo 'let coq_config_string = "'`coqc -config | tr '\n' '|'`'";; ' > myocamlbuild.ml
+	@ echo >> myocamlbuild.ml
+	@ cat ../myocamlbuild.template >> myocamlbuild.ml
 
 clean:
-	ocamlbuild -clean
+	@ ocamlbuild -clean
+	@ rm -f myocamlbuild.ml
