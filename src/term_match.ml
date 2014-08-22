@@ -7,6 +7,7 @@ type ('a,'b) pattern =
 | Ref of 'b
 | Choice of (('a,'b) pattern) list
 | Impl of ('a,'b) pattern * ('a,'b) pattern
+| Pi of ('a,'b) pattern * ('a,'b) pattern
 | Ignore
 | Filter of (Term.constr -> bool) * ('a,'b) pattern
 
@@ -62,16 +63,6 @@ let rec match_pattern p e ctx s =
     end
   | As (ptrn, nm) ->
     begin
-(*
-      try
-        let v = Hashtbl.find s nm in
-	if Term.eq_constr e v then
-	  s
-	else
-	  raise Match_failure
-      with
-	Not_found ->
-*)
       let res = match_pattern ptrn e ctx s in
       let _ = Hashtbl.add res nm e in
       res
@@ -85,6 +76,14 @@ let rec match_pattern p e ctx s =
 	    match_pattern r rhs ctx s
 	  else
 	    raise Match_failure
+      | _ -> raise Match_failure
+    end
+  | Pi (l,r) ->
+    begin
+      match Term.kind_of_term e with
+	Term.Prod (_, lhs, rhs) ->
+	  let _ = match_pattern l lhs ctx s in
+	  match_pattern r rhs ctx s
       | _ -> raise Match_failure
     end
   | Ref n ->

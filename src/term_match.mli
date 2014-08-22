@@ -7,6 +7,7 @@ type ('a,'b) pattern =
 | Ref of 'b
 | Choice of (('a,'b) pattern) list
 | Impl of ('a,'b) pattern * ('a,'b) pattern
+| Pi of ('a,'b) pattern * ('a,'b) pattern
 | Ignore
 | Filter of (Term.constr -> bool) * ('a,'b) pattern
 
