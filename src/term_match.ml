@@ -1,14 +1,14 @@
-type 'a pattern =
+type ('a,'b) pattern =
 | Glob of Term.constr Lazy.t
 | EGlob of Term.constr
-| App of 'a pattern * 'a pattern
-| Lam of string * 'a pattern * 'a pattern
-| As of 'a pattern * 'a
-| Ref of 'a
-| Choice of ('a pattern) list
-| Impl of 'a pattern * 'a pattern
+| App of ('a,'b) pattern * ('a,'b) pattern
+| Lam of 'b * ('a,'b) pattern * ('a,'b) pattern
+| As of ('a,'b) pattern * 'a
+| Ref of 'b
+| Choice of (('a,'b) pattern) list
+| Impl of ('a,'b) pattern * ('a,'b) pattern
 | Ignore
-| Filter of (Term.constr -> bool) * 'a pattern
+| Filter of (Term.constr -> bool) * ('a,'b) pattern
 
 exception Match_failure
 
@@ -107,7 +107,22 @@ let matches gl ls e =
     | [] -> raise Match_failure
     | (p,f) :: ls ->
       try
-	f (match_pattern p e gl x)
+	f gl (match_pattern p e gl x)
+      with
+	Match_failure ->
+	  let _ = Hashtbl.clear x in
+	  recur ls
+  in
+  recur ls
+
+let matches_app gl ls e args from =
+  let x = Hashtbl.create 5 in
+  let rec recur ls =
+    match ls with
+    | [] -> raise Match_failure
+    | (p,f) :: ls ->
+      try
+	f gl (match_app e args from p gl x)
       with
 	Match_failure ->
 	  let _ = Hashtbl.clear x in
