@@ -5,6 +5,11 @@ sig
   val to_positive : int -> Term.constr
   val to_N : int -> Term.constr
   val to_nat : int -> Term.constr
+  val of_nat : Term.constr -> int
+(*
+  val of_N : Term.constr -> int
+  val of_positive : Term.constr -> int
+*)
 
   val c_Some : Term.constr Lazy.t
   val c_None : Term.constr Lazy.t

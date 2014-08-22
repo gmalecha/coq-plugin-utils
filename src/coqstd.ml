@@ -1,8 +1,15 @@
 module Std (C : sig val contrib_name : string end) =
 struct
+  let pp_constr fmt x = Pp.pp_with fmt (Printer.pr_constr x)
+
   let resolve_symbol (path : string list) (tm : string) : Term.constr =
     let re = Coqlib.find_reference C.contrib_name path tm in
     Libnames.constr_of_global re
+
+  let rec app_full trm acc =
+    match Term.kind_of_term trm with
+      Term.App (f, xs) -> app_full f (Array.to_list xs @ acc)
+    | _ -> (trm, acc)
 
   let datatypes_pkg = ["Coq";"Init";"Datatypes"]
   let bignums_pkg = ["Coq";"Numbers";"BinNums"]
@@ -45,19 +52,35 @@ struct
 	then raise (Invalid_argument ("to_N: " ^ string_of_int n))
 	else Term.mkApp (Lazy.force pos, [| to_positive n |])
 
+  let c_S = lazy (resolve_symbol datatypes_pkg "S")
+  let c_O = lazy (resolve_symbol datatypes_pkg "O")
+
   let to_nat =
-    let s = lazy (resolve_symbol datatypes_pkg "S") in
-    let o = lazy (resolve_symbol datatypes_pkg "O") in
     let rec to_nat n =
       if n = 0 then
-	Lazy.force o
+	Lazy.force c_O
       else
-	Term.mkApp (Lazy.force s, [| to_nat (n - 1) |])
+	Term.mkApp (Lazy.force c_S, [| to_nat (n - 1) |])
     in
     fun n ->
       if n < 0
       then raise (Invalid_argument ("to_nat: " ^ string_of_int n))
       else to_nat n
+
+  let bad_arg msg trm =
+    let _ = Format.eprintf "\n%s: %a\n" msg pp_constr trm in
+    raise (Invalid_argument msg)
+
+  let rec of_nat (trm : Term.constr) : int =
+    let (h,args) = app_full trm [] in
+    if Term.eq_constr h (Lazy.force c_O) then
+      0
+    else if Term.eq_constr h (Lazy.force c_S) then
+      match args with
+	n :: _ -> 1 + of_nat n
+      | _ -> bad_arg "of_nat" trm
+    else
+      bad_arg "of_nat" trm
 
   let c_nil = lazy (resolve_symbol datatypes_pkg "nil")
   let c_cons = lazy (resolve_symbol datatypes_pkg "cons")

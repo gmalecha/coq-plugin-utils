@@ -1,11 +1,12 @@
-type pattern =
+type 'a pattern =
 | Glob of Term.constr Lazy.t
-| App of pattern * pattern
-| Lam of string * pattern * pattern
-| As of pattern * string
-| Ref of string
-| Choice of pattern list
-| Impl of pattern * pattern
+| EGlob of Term.constr
+| App of 'a pattern * 'a pattern
+| Lam of string * 'a pattern * 'a pattern
+| As of 'a pattern * 'a
+| Ref of 'a
+| Choice of ('a pattern) list
+| Impl of 'a pattern * 'a pattern
 | Ignore
 
 exception Match_failure
@@ -17,6 +18,14 @@ let rec match_pattern p e ctx s =
   | Glob name ->
     begin
       if Term.eq_constr (Lazy.force name) e
+      then
+	s
+      else
+	raise Match_failure
+    end
+  | EGlob name ->
+    begin
+      if Term.eq_constr name e
       then
 	s
       else
