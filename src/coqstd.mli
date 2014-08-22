@@ -1,5 +1,7 @@
 module Std (C : sig val contrib_name : string end) :
 sig
+  val pp_constr : Format.formatter -> Term.constr -> unit
+
   val resolve_symbol : string list -> string -> Term.constr
 
   val to_positive : int -> Term.constr

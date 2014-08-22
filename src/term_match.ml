@@ -8,7 +8,7 @@ type 'a pattern =
 | Choice of ('a pattern) list
 | Impl of 'a pattern * 'a pattern
 | Ignore
-| Filter of (Term.constr -> bool)
+| Filter of (Term.constr -> bool) * 'a pattern
 
 exception Match_failure
 
@@ -32,8 +32,8 @@ let rec match_pattern p e ctx s =
       else
 	raise Match_failure
     end
-  | Filter f ->
-    if f e then s else raise Match_failure
+  | Filter (f, p) ->
+    if f e then match_pattern p e ctx s else raise Match_failure
   | Choice pl ->
     begin
       let rec try_each pl =
