@@ -8,6 +8,7 @@ type 'a pattern =
 | Choice of ('a pattern) list
 | Impl of 'a pattern * 'a pattern
 | Ignore
+| Filter of (Term.constr -> bool)
 
 exception Match_failure
 
