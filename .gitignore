@@ -12,3 +12,4 @@ Makefile.coq
 _build
 .coq_config
 src/myocamlbuild.ml
+*~
