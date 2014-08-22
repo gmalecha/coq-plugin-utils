@@ -9,6 +9,8 @@ type 'a pattern =
 | Impl of 'a pattern * 'a pattern
 | Ignore
 
+exception Match_failure
+
 val match_pattern : 'a pattern -> Term.constr -> 'c -> ('a,Term.constr) Hashtbl.t -> ('a,Term.constr) Hashtbl.t
 
 val matches : 'a -> ('b pattern * (('b, Term.constr) Hashtbl.t -> 'c)) list -> Term.constr -> 'c

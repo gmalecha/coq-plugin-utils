@@ -61,7 +61,7 @@ let rec match_pattern p e ctx s =
     begin
 (*
       try
-	let v = Hashtbl.find s nm in
+        let v = Hashtbl.find s nm in
 	if Term.eq_constr e v then
 	  s
 	else
