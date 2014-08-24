@@ -1,15 +1,15 @@
-type ('a,'b) pattern =
+type ('a,'b,'c) pattern =
 | Glob of Term.constr Lazy.t
 | EGlob of Term.constr
-| App of ('a,'b) pattern * ('a,'b) pattern
-| Lam of 'b * ('a,'b) pattern * ('a,'b) pattern
-| As of ('a,'b) pattern * 'a
+| App of ('a,'b,'c) pattern * ('a,'b,'c) pattern
+| Lam of 'b * ('a,'b,'c) pattern * ('a,'b,'c) pattern
+| As of ('a,'b,'c) pattern * 'a
 | Ref of 'b
-| Choice of (('a,'b) pattern) list
-| Impl of ('a,'b) pattern * ('a,'b) pattern
-| Pi of ('a,'b) pattern * ('a,'b) pattern
+| Choice of (('a,'b,'c) pattern) list
+| Impl of ('a,'b,'c) pattern * ('a,'b,'c) pattern
+| Pi of ('a,'b,'c) pattern * ('a,'b,'c) pattern
 | Ignore
-| Filter of (Term.constr -> bool) * ('a,'b) pattern
+| Filter of ('c -> Term.constr -> bool) * ('a,'b,'c) pattern
 
 exception Match_failure
 
@@ -34,7 +34,7 @@ let rec match_pattern p e ctx s =
 	raise Match_failure
     end
   | Filter (f, p) ->
-    if f e then match_pattern p e ctx s else raise Match_failure
+    if f ctx e then match_pattern p e ctx s else raise Match_failure
   | Choice pl ->
     begin
       let rec try_each pl =
