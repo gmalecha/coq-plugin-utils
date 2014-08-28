@@ -13,6 +13,10 @@ type ('a,'b,'c) pattern =
 
 exception Match_failure
 
+val apps : ('a,'b,'c) pattern -> ('a,'b,'c) pattern list -> ('a,'b,'c) pattern
+
+val get : 'a -> ('a,'b,'c) pattern
+
 val match_pattern : ('a,'b,'c) pattern -> Term.constr -> 'c -> ('a,Term.constr) Hashtbl.t -> ('a,Term.constr) Hashtbl.t
 
 val matches : 'a -> (('b,'d,'a) pattern * ('a -> ('b, Term.constr) Hashtbl.t -> 'c)) list -> Term.constr -> 'c

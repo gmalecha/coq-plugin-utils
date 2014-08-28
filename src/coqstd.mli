@@ -1,37 +1,84 @@
-module Std (C : sig val contrib_name : string end) :
+(** TODO: This being a functor might be the wrong way to go
+ **)
+module Std
+  (C : sig
+         val contrib_name : string
+       end) :
 sig
+  type coq_term = Term.constr
+  type coq_type = Term.constr
+
   val pp_constr : Format.formatter -> Term.constr -> unit
 
   val resolve_symbol : string list -> string -> Term.constr
 
-  val to_positive : int -> Term.constr
-  val to_N : int -> Term.constr
-  val to_nat : int -> Term.constr
-  val of_nat : Term.constr -> int
-(*
-  val of_N : Term.constr -> int
-  val of_positive : Term.constr -> int
-*)
+  module Unit :
+  sig
+    val tt : coq_term Lazy.t
+    val unit : coq_type Lazy.t
+  end
 
-  val c_Some : Term.constr Lazy.t
-  val c_None : Term.constr Lazy.t
-  val to_option : Term.constr -> Term.constr option -> Term.constr
+  module Positive :
+  sig
+    val pos_type : coq_type Lazy.t
+    val to_positive : int -> coq_term
+  end
 
-  val c_nil : Term.constr Lazy.t
-  val c_cons : Term.constr Lazy.t
-  val to_list : Term.constr -> Term.constr list -> Term.constr
-  val list_of : Term.constr -> Term.constr
+  module BinNum :
+  sig
+    val n_type : coq_type Lazy.t
+    val to_N : int -> coq_term
+  end
 
-  val to_posmap : 'b -> ('b -> 'c option -> 'b -> 'b) ->
-    ('a -> 'c option) -> 'a list -> 'b
+  module Nat :
+  sig
+    val nat_type : coq_type Lazy.t
+    val c_O : coq_term Lazy.t
+    val c_S : coq_term Lazy.t
 
-  val sigT_ctor : Term.constr Lazy.t
-  val existT_ctor : Term.constr Lazy.t
-  val sigT : Term.constr -> Term.constr -> Term.constr
-  val existT : Term.constr -> Term.constr -> Term.constr -> Term.constr -> Term.constr
+    val to_nat : int -> coq_term
+    val of_nat : coq_term -> int
+  end
 
-  val prod_ctor : Term.constr Lazy.t
-  val pair_ctor : Term.constr Lazy.t
-  val prod : Term.constr -> Term.constr -> Term.constr
-  val pair : Term.constr -> Term.constr -> Term.constr -> Term.constr -> Term.constr
+  module Option :
+  sig
+    val option_type : coq_type Lazy.t
+    val option_of : coq_type -> coq_type
+
+    val c_Some : coq_term Lazy.t
+    val c_None : coq_term Lazy.t
+    val to_option : coq_term -> coq_term option -> coq_term
+  end
+
+  module List :
+  sig
+    val list_of : coq_type -> coq_type
+    val c_nil : coq_term Lazy.t
+    val c_cons : coq_term Lazy.t
+    val to_list : coq_type -> coq_term list -> coq_term
+  end
+
+  module PosMap :
+  sig
+    val to_posmap : 'b -> ('b -> 'c option -> 'b -> 'b) ->
+      ('a -> 'c option) -> 'a list -> 'b
+  end
+
+  module SigT :
+  sig
+    val sigT_type : coq_type Lazy.t
+    val sigT : coq_type -> coq_term -> coq_type
+
+    val c_existT : coq_term Lazy.t
+    val existT : coq_type -> coq_term -> coq_term -> coq_term -> coq_term
+  end
+
+  module Pair :
+  sig
+    val prod_type : coq_type Lazy.t
+    val prod : coq_type -> coq_type -> coq_type
+
+    val c_pair : coq_term Lazy.t
+    val pair   : coq_type -> coq_type -> coq_term -> coq_term -> coq_term
+  end
 end

@@ -13,6 +13,16 @@ type ('a,'b,'c) pattern =
 
 exception Match_failure
 
+let rec apps f ls =
+  match ls with
+    [] -> f
+  | l :: ls ->
+    apps (App (f,l)) ls
+
+let get x =
+  As (Ignore, x)
+
+
 (** NOTE: This function does not clear writes by failed choices **)
 let rec match_pattern p e ctx s =
   match p with
