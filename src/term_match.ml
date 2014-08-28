@@ -68,7 +68,8 @@ let rec match_pattern p e ctx s =
     begin
       match Term.kind_of_term e with
       | Term.Lambda (n, t, c) ->
-	assert false
+	let _ = match_pattern pty t ctx s in
+	match_pattern pbody c ctx s
       | _ -> raise Match_failure
     end
   | As (ptrn, nm) ->

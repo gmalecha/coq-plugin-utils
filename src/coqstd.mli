@@ -60,6 +60,9 @@ sig
 
   module PosMap :
   sig
+    val c_leaf : coq_term Lazy.t
+    val c_node : coq_term Lazy.t
+
     val to_posmap : 'b -> ('b -> 'c option -> 'b -> 'b) ->
       ('a -> 'c option) -> 'a list -> 'b
   end

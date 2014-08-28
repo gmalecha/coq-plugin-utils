@@ -142,6 +142,11 @@ struct
     | PM_Empty
     | PM_Branch of 'a pmap * 'a option * 'a pmap
 
+    let posmap_mod = ["Coq";"FSets";"FMapPositive";"PositiveMap"]
+
+    let c_leaf = lazy (resolve_symbol posmap_mod "Leaf")
+    let c_node = lazy (resolve_symbol posmap_mod "Node")
+
     let rec pmap_add k v m =
       if k = 1 then
 	match m with
