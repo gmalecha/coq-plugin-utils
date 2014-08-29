@@ -13,3 +13,5 @@ _build
 .coq_config
 src/myocamlbuild.ml
 *~
+*.glob
+*.vo
