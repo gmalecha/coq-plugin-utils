@@ -3,6 +3,7 @@ plugin:
 
 clean:
 	$(MAKE) -C src clean
+	@ rm .coq_config
 
 install:
 	install -d $(INSTALL_DIR)
