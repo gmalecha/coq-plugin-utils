@@ -205,13 +205,13 @@ struct
   module Pair =
   struct
     let prod_type : Term.constr Lazy.t =
-      lazy (resolve_symbol specif_pkg "prod")
+      lazy (resolve_symbol datatypes_pkg "prod")
 
     let prod a b : Term.constr =
       Term.mkApp (Lazy.force prod_type, [| a ; b |])
 
     let c_pair : Term.constr Lazy.t =
-      lazy (resolve_symbol specif_pkg "pair")
+      lazy (resolve_symbol datatypes_pkg "pair")
 
     let pair a b f s : Term.constr =
       Term.mkApp (Lazy.force c_pair, [| a ; b ; f ; s |])
