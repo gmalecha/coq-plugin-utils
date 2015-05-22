@@ -16,6 +16,6 @@ myocamlbuild.ml: ../myocamlbuild.template
 
 clean:
 	@ ocamlbuild -clean
-	@ rm -f myocamlbuild.ml
+	@ rm -rf myocamlbuild.ml .coq-native
 
 -include ../.coq_config

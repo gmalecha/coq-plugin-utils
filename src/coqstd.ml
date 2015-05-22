@@ -7,7 +7,7 @@ struct
 
   let resolve_symbol (path : string list) (tm : string) : Term.constr =
     let re = Coqlib.find_reference C.contrib_name path tm in
-    Libnames.constr_of_global re
+    Universes.constr_of_global re
 
   let rec app_full trm acc =
     match Term.kind_of_term trm with

@@ -82,7 +82,7 @@ let rec match_pattern p e ctx s =
     begin
       match Term.kind_of_term e with
 	Term.Prod (_, lhs, rhs) ->
-	  if Term.noccurn 1 rhs then
+	  if Vars.noccurn 1 rhs then
 	    let _ = match_pattern l lhs ctx s in
 	    match_pattern r rhs ctx s
 	  else
