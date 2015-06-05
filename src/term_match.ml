@@ -1,6 +1,8 @@
 type ('a,'b,'c) pattern =
 | Glob of Term.constr Lazy.t
 | EGlob of Term.constr
+| Glob_no_univ of Term.constr Lazy.t
+| EGlob_no_univ of Term.constr
 | App of ('a,'b,'c) pattern * ('a,'b,'c) pattern
 | Lam of 'b * ('a,'b,'c) pattern * ('a,'b,'c) pattern
 | As of ('a,'b,'c) pattern * 'a
@@ -38,6 +40,22 @@ let rec match_pattern p e ctx s =
   | EGlob name ->
     begin
       if Term.eq_constr name e
+      then
+	s
+      else
+	raise Match_failure
+    end
+  | Glob_no_univ name ->
+    begin
+      if Term.eq_constr_nounivs (Lazy.force name) e
+      then
+	s
+      else
+	raise Match_failure
+    end
+  | EGlob_no_univ name ->
+    begin
+      if Term.eq_constr_nounivs name e
       then
 	s
       else

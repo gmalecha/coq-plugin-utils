@@ -1,6 +1,8 @@
 type ('a,'b,'c) pattern =
 | Glob of Term.constr Lazy.t
 | EGlob of Term.constr
+| Glob_no_univ of Term.constr Lazy.t
+| EGlob_no_univ of Term.constr
 | App of ('a,'b,'c) pattern * ('a,'b,'c) pattern
 | Lam of 'b * ('a,'b,'c) pattern * ('a,'b,'c) pattern
 | As of ('a,'b,'c) pattern * 'a
