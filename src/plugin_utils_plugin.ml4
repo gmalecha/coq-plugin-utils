@@ -2,4 +2,4 @@
 (*i camlp4use: "pa_extend.cmo" i*)
 
 
-DECLARE PLUGIN plugin_utils
+DECLARE PLUGIN "plugin_utils"

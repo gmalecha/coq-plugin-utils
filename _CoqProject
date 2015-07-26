@@ -1,0 +1,13 @@
+-I src
+-I $(COQLIB)/intf
+-Q theories PluginUtils
+
+src/coqstd.mli
+src/coqstd.ml
+src/term_match.mli
+src/term_match.ml
+src/use_ltac.ml
+src/use_ltac.mli
+src/plugin_utils_plugin.ml4
+src/plugin_utils.mlpack
+theories/PluginUtils.v

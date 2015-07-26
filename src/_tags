@@ -1,3 +1,0 @@
-<myocamlbuild.*>: coq_paths
-<use_ltac.*> or <term_match.*> or <coqstd.*>: coq, for-pack(Plugin_utils)
-<plugin_utils.*>: coq
