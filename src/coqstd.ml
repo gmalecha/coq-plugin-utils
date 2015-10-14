@@ -5,9 +5,10 @@ struct
 
   let pp_constr fmt x = Pp.pp_with fmt (Printer.pr_constr x)
 
-  let resolve_symbol (path : string list) (tm : string) : Term.constr =
+  let resolve_symbol (path : string list) (tm : string) : Term.constr Lazy.t =
+  lazy (
     let re = Coqlib.find_reference C.contrib_name path tm in
-    Universes.constr_of_global re
+    Universes.constr_of_global re)
 
   let rec app_full trm acc =
     match Term.kind_of_term trm with
@@ -25,19 +26,19 @@ struct
 
   module Unit =
   struct
-    let tt = lazy (resolve_symbol datatypes_pkg "tt")
-    let unit = lazy (resolve_symbol datatypes_pkg "unit")
+    let tt = resolve_symbol datatypes_pkg "tt"
+    let unit = resolve_symbol datatypes_pkg "unit"
   end
 
   module Positive =
   struct
 
-    let pos_type = lazy (resolve_symbol bignums_pkg "positive")
+    let pos_type = resolve_symbol bignums_pkg "positive"
 
     let to_positive =
-      let xH = lazy (resolve_symbol bignums_pkg "xH") in
-      let xO = lazy (resolve_symbol bignums_pkg "xO") in
-      let xI = lazy (resolve_symbol bignums_pkg "xI") in
+      let xH = resolve_symbol bignums_pkg "xH" in
+      let xO = resolve_symbol bignums_pkg "xO" in
+      let xI = resolve_symbol bignums_pkg "xI" in
       let rec to_positive n =
 	if n = 1 then
 	  Lazy.force xH
@@ -56,11 +57,11 @@ struct
 
   module BinNum =
   struct
-    let n_type = lazy (resolve_symbol bignums_pkg "N")
+    let n_type = resolve_symbol bignums_pkg "N"
 
     let to_N =
-      let o = lazy (resolve_symbol bignums_pkg "N0") in
-      let pos = lazy (resolve_symbol bignums_pkg "Npos") in
+      let o = resolve_symbol bignums_pkg "N0" in
+      let pos = resolve_symbol bignums_pkg "Npos" in
       fun n ->
 	if n = 0
 	then Lazy.force o
@@ -72,9 +73,9 @@ struct
 
   module Nat =
   struct
-    let nat_type = lazy (resolve_symbol datatypes_pkg "nat")
-    let c_S = lazy (resolve_symbol datatypes_pkg "S")
-    let c_O = lazy (resolve_symbol datatypes_pkg "O")
+    let nat_type = resolve_symbol datatypes_pkg "nat"
+    let c_S = resolve_symbol datatypes_pkg "S"
+    let c_O = resolve_symbol datatypes_pkg "O"
 
     let to_nat =
       let rec to_nat n =
@@ -102,10 +103,10 @@ struct
 
   module Option =
   struct
-    let c_None = lazy (resolve_symbol datatypes_pkg "None")
-    let c_Some = lazy (resolve_symbol datatypes_pkg "Some")
+    let c_None = resolve_symbol datatypes_pkg "None"
+    let c_Some = resolve_symbol datatypes_pkg "Some"
 
-    let option_type = lazy (resolve_symbol datatypes_pkg "option")
+    let option_type = resolve_symbol datatypes_pkg "option"
     let option_of (t : coq_type) =
       Term.mkApp (Lazy.force option_type, [| t |])
 
@@ -118,12 +119,12 @@ struct
   module List =
   struct
     let list_type =
-      lazy (resolve_symbol datatypes_pkg "list")
+      resolve_symbol datatypes_pkg "list"
     let list_of typ =
       Term.mkApp (Lazy.force list_type, [| typ |])
 
-    let c_nil = lazy (resolve_symbol datatypes_pkg "nil")
-    let c_cons = lazy (resolve_symbol datatypes_pkg "cons")
+    let c_nil = resolve_symbol datatypes_pkg "nil"
+    let c_cons = resolve_symbol datatypes_pkg "cons"
 
     let to_list typ =
       let the_nil = Term.mkApp (Lazy.force c_nil, [| typ |]) in
@@ -144,8 +145,8 @@ struct
 
     let posmap_mod = ["Coq";"FSets";"FMapPositive";"PositiveMap"]
 
-    let c_leaf = lazy (resolve_symbol posmap_mod "Leaf")
-    let c_node = lazy (resolve_symbol posmap_mod "Node")
+    let c_leaf = resolve_symbol posmap_mod "Leaf"
+    let c_node = resolve_symbol posmap_mod "Node"
 
     let rec pmap_add k v m =
       if k = 1 then
@@ -189,10 +190,10 @@ struct
   module SigT =
   struct
     let sigT_type : Term.constr Lazy.t =
-      lazy (resolve_symbol specif_pkg "sigT")
+      resolve_symbol specif_pkg "sigT"
 
     let c_existT : Term.constr Lazy.t =
-      lazy (resolve_symbol specif_pkg "existT")
+      resolve_symbol specif_pkg "existT"
 
     let sigT a b : Term.constr =
       Term.mkApp (Lazy.force sigT_type, [| a ; b |])
@@ -205,13 +206,13 @@ struct
   module Pair =
   struct
     let prod_type : Term.constr Lazy.t =
-      lazy (resolve_symbol datatypes_pkg "prod")
+      resolve_symbol datatypes_pkg "prod"
 
     let prod a b : Term.constr =
       Term.mkApp (Lazy.force prod_type, [| a ; b |])
 
     let c_pair : Term.constr Lazy.t =
-      lazy (resolve_symbol datatypes_pkg "pair")
+      resolve_symbol datatypes_pkg "pair"
 
     let pair a b f s : Term.constr =
       Term.mkApp (Lazy.force c_pair, [| a ; b ; f ; s |])

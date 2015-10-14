@@ -10,7 +10,7 @@ sig
 
   val pp_constr : Format.formatter -> Term.constr -> unit
 
-  val resolve_symbol : string list -> string -> Term.constr
+  val resolve_symbol : string list -> string -> Term.constr Lazy.t
 
   module Unit :
   sig
