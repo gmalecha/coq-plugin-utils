@@ -1,5 +1,3 @@
-(** TODO: This being a functor might be the wrong way to go
- **)
 module Std
   (C : sig
          val contrib_name : string
@@ -7,8 +5,6 @@ module Std
 sig
   type coq_term = Term.constr
   type coq_type = Term.constr
-
-  val pp_constr : Format.formatter -> Term.constr -> unit
 
   val resolve_symbol : string list -> string -> Term.constr Lazy.t
 
@@ -22,12 +18,14 @@ sig
   sig
     val pos_type : coq_type Lazy.t
     val to_positive : int -> coq_term
+    val of_positive : coq_term -> int
   end
 
   module BinNum :
   sig
     val n_type : coq_type Lazy.t
     val to_N : int -> coq_term
+    val of_N : coq_term -> int
   end
 
   module Nat :
@@ -47,7 +45,7 @@ sig
 
     val c_Some : coq_term Lazy.t
     val c_None : coq_term Lazy.t
-    val to_option : coq_term -> coq_term option -> coq_term
+    val to_option : coq_type -> coq_term option -> coq_term
   end
 
   module List :
@@ -85,3 +83,4 @@ sig
     val pair   : coq_type -> coq_type -> coq_term -> coq_term -> coq_term
   end
 end
+

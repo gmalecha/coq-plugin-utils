@@ -16,9 +16,8 @@ struct
     | _ -> (trm, acc)
 
   let bad_arg msg trm =
-    let _ = Format.eprintf "\n%s: %a\n" msg pp_constr trm in
+    let msg = Format.asprintf "%s: %a" msg pp_constr trm in
     raise (Invalid_argument msg)
-
 
   let datatypes_pkg = ["Coq";"Init";"Datatypes"]
   let bignums_pkg = ["Coq";"Numbers";"BinNums"]
@@ -35,23 +34,35 @@ struct
 
     let pos_type = resolve_symbol bignums_pkg "positive"
 
+    let xH = resolve_symbol bignums_pkg "xH"
+    let xO = resolve_symbol bignums_pkg "xO"
+    let xI = resolve_symbol bignums_pkg "xI"
+
     let to_positive =
-      let xH = resolve_symbol bignums_pkg "xH" in
-      let xO = resolve_symbol bignums_pkg "xO" in
-      let xI = resolve_symbol bignums_pkg "xI" in
       let rec to_positive n =
-	if n = 1 then
+        if n = 1 then
 	  Lazy.force xH
-	else
-	  if n mod 2 = 0 then
-	    Term.mkApp (Lazy.force xO, [| to_positive (n / 2) |])
-	  else
-  	    Term.mkApp (Lazy.force xI, [| to_positive (n / 2) |])
+        else
+        if n mod 2 = 0 then
+	  Term.mkApp (Lazy.force xO, [| to_positive (n / 2) |])
+        else
+  	  Term.mkApp (Lazy.force xI, [| to_positive (n / 2) |])
       in
       fun n ->
-	if n <= 0
-	then raise (Invalid_argument ("to_positive: " ^ string_of_int n))
-	else to_positive n
+        if n <= 0
+        then raise (Invalid_argument ("to_positive: " ^ string_of_int n))
+        else to_positive n
+
+    let rec of_positive n =
+      let (h,args) = app_full n [] in
+      if Term.eq_constr h (Lazy.force xH) then
+        1
+      else if Term.eq_constr h (Lazy.force xO) then
+        of_positive (List.hd args) * 2
+      else if Term.eq_constr h (Lazy.force xI) then
+        of_positive (List.hd args) * 2 + 1
+      else
+        bad_arg "of_positive" n
 
   end
 
@@ -59,16 +70,26 @@ struct
   struct
     let n_type = resolve_symbol bignums_pkg "N"
 
-    let to_N =
-      let o = resolve_symbol bignums_pkg "N0" in
-      let pos = resolve_symbol bignums_pkg "Npos" in
-      fun n ->
-	if n = 0
-	then Lazy.force o
-	else
-	  if n < 0
-	  then raise (Invalid_argument (Printf.sprintf "to_N: %d" n))
-	  else Term.mkApp (Lazy.force pos, [| Positive.to_positive n |])
+    let o = resolve_symbol bignums_pkg "N0"
+    let pos = resolve_symbol bignums_pkg "Npos"
+
+    let to_N n =
+      if n = 0 then
+        Lazy.force o
+      else if n < 0 then
+        raise (Invalid_argument (Printf.sprintf "to_N: %d" n))
+      else
+        let res = Positive.to_positive n in
+        Term.mkApp (Lazy.force pos, [| res |])
+
+    let of_N n =
+      let (h,args) = app_full n [] in
+      if Term.eq_constr h (Lazy.force o) then
+        0
+      else if Term.eq_constr h (Lazy.force pos) then
+        Positive.of_positive (List.hd args)
+      else
+        bad_arg "of_N" n
   end
 
   module Nat =
