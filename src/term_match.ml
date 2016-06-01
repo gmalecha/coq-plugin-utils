@@ -10,6 +10,7 @@ type ('a,'b,'c) pattern =
 | Choice of (('a,'b,'c) pattern) list
 | Impl of ('a,'b,'c) pattern * ('a,'b,'c) pattern
 | Pi of ('a,'b,'c) pattern * ('a,'b,'c) pattern
+| Sort
 | Ignore
 | Filter of ('c -> Term.constr -> bool) * ('a,'b,'c) pattern
 
@@ -115,6 +116,9 @@ let rec match_pattern p e ctx s =
 	  match_pattern r rhs ctx s
       | _ -> raise Match_failure
     end
+  | Sort ->
+    if Term.isSort e then s
+    else raise Match_failure
   | Ref n ->
     assert false
 and match_app f args i p ctx s =

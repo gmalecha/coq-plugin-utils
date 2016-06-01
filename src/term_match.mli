@@ -10,6 +10,7 @@ type ('a,'b,'c) pattern =
 | Choice of (('a,'b,'c) pattern) list
 | Impl of ('a,'b,'c) pattern * ('a,'b,'c) pattern
 | Pi of ('a,'b,'c) pattern * ('a,'b,'c) pattern
+| Sort
 | Ignore
 | Filter of ('c -> Term.constr -> bool) * ('a,'b,'c) pattern
 
