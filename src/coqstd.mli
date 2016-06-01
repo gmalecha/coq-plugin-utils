@@ -1,7 +1,4 @@
-module Std
-  (C : sig
-         val contrib_name : string
-       end) :
+module type STD =
 sig
   type coq_term = Term.constr
   type coq_type = Term.constr
@@ -84,3 +81,7 @@ sig
   end
 end
 
+module Std
+  (C : sig
+         val contrib_name : string
+       end) : STD
