@@ -17,3 +17,4 @@ src/myocamlbuild.ml
 *~
 *.glob
 *.vo
+*.aux
